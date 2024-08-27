@@ -4,16 +4,9 @@ import './chatbot.css';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 import Webcam from 'react-webcam';
-import AWS from 'aws-sdk';
 import { Buffer } from 'buffer';
-// Configure AWS
-AWS.config.update({
-  region: 'ap-south-1',
-  accessKeyId: 'AKIAQZFG4ZBR5OTINTGS',
-  secretAccessKey: '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'
-});
 
-const rekognition = new AWS.Rekognition();
+
 
 const initialMessages = [];
 
@@ -44,17 +37,15 @@ const Chat = () => {
         },
         Attributes: ['ALL']
       };
-  
       // Call the Rekognition API
-      rekognition.detectFaces(params, (err, data) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(data.FaceDetails[0].Emotions);
-        }
+      axios.post("http://44.211.44.236/emotions", params).then((res) => {
+        resolve(res.data.FaceDetails[0].Emotions);
+      }).catch((err) => {
+        reject(err);
       });
+      
     });
-  }, [webcamRef, rekognition]);
+  }, [webcamRef]);
 
   useEffect(() => {
     scrollToBottom();
@@ -91,7 +82,7 @@ const Chat = () => {
     setInputMessage('');
     setIsBotTyping(true);
 
-    axios.post("http://localhost:8000/chat", {
+    axios.post("http://44.211.44.236/chat", {
       prompt: `{ prompt:${inputMessage}}, {facial_emotion:${dominantEmotion}}`
     })
       .then((res) => {
@@ -120,7 +111,7 @@ const Chat = () => {
         return acc;
       }, {});
       // console.log(emotionsObj);
-      axios.post("http://localhost:8000/stats", { emotionsObj, prompt: inputMessage, username })
+      axios.post("http://44.211.44.236/stats", { emotionsObj, prompt: inputMessage, username })
         .then((res) => {
 
         })
