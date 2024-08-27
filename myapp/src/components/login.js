@@ -17,7 +17,7 @@ export default function Login() {
             alert("Passwords do not match")
             return
         }
-        axios.post("http://localhost:8000/signup", data).then((res) => {
+        axios.post("http://13.127.122.145/signup", data).then((res) => {
           if (res.data == 1) {
             alert("User already exists")
           } else {
@@ -36,7 +36,7 @@ export default function Login() {
           username: e.target.username.value,
           password: e.target.pswd.value
         }
-        axios.post("http://localhost:8000/login", data).then((res) => {
+        axios.post("http://13.127.122.145/login", data).then((res) => {
           if (res.data == "not found") {
             alert("User not found")
           } else if (res.data == "wrong password") {

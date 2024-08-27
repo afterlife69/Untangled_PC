@@ -93,7 +93,7 @@ const Chat = () => {
     setInputMessage('');
     // Simulate bot response
     setIsBotTyping(true);
-    axios.post("http://localhost:8000/chat", {prompt: '{prompt: '+inputMessage+'} {facial_emotion:{'+dominantEmotion+'}}'}).then((res) =>{
+    axios.post("http://13.127.122.145/chat", {prompt: '{prompt: '+inputMessage+'} {facial_emotion:{'+dominantEmotion+'}}'}).then((res) =>{
       setIsBotTyping(false);
       const botResponse = {
         id: Date.now() + 1,
@@ -115,7 +115,7 @@ const Chat = () => {
     // parse json
     const username = JSON.parse(localStorage.getItem('user')).username;
     
-    axios.post("http://localhost:8000/stats", {emotions: emotions, prompt: inputMessage, username : username}).then((res) => {
+    axios.post("http://13.127.122.145/stats", {emotions: emotions, prompt: inputMessage, username : username}).then((res) => {
       console.log(res.data);
     }).catch((err) => {
       console.log(err);
@@ -123,6 +123,7 @@ const Chat = () => {
   };
   function handleLogout(){
     localStorage.removeItem('user');
+    
   }
   return (
     <div className='chatMain'>
