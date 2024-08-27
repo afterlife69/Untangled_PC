@@ -1,89 +1,87 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './chatbot.css'; // You'll need to create this CSS file with the styles from the provided code
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import './chatbot.css';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
-import LiveEmotionDetection from './emotionDetection';
 import Webcam from 'react-webcam';
-import * as faceapi from 'face-api.js';
-import { Link } from 'react-router-dom';
-const initialMessages = [
-  
-];
+import AWS from 'aws-sdk';
+import { Buffer } from 'buffer';
+// Configure AWS
+AWS.config.update({
+  region: 'ap-south-1',
+  accessKeyId: 'AKIAQZFG4ZBR5OTINTGS',
+  secretAccessKey: '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'
+});
+
+const rekognition = new AWS.Rekognition();
+
+const initialMessages = [];
 
 const Chat = () => {
-
-  
   const [messages, setMessages] = useState(initialMessages);
   const [inputMessage, setInputMessage] = useState('');
   const [isBotTyping, setIsBotTyping] = useState(false);
   const [currentTypingMessageId, setCurrentTypingMessageId] = useState(null);
-  const [expressions, setExpressions] = useState({});
   const webcamRef = useRef(null);
-  const [loading, setLoading] = useState(true);
   const messagesEndRef = useRef(null);
   const messageContainerRef = useRef(null);
   const navigate = useNavigate();
-  useEffect(() => {
-    const loadModels = async () => {
-      try {
-        await faceapi.nets.tinyFaceDetector.loadFromUri('/models');
-        await faceapi.nets.faceExpressionNet.loadFromUri('/models');
-        setLoading(false);
-      } catch (error) {
-        console.error('Error loading models:', error);
-      }
-    };
-
-    loadModels();
-  }, []);
 
   const scrollToBottom = () => {
     if (messageContainerRef.current) {
       messageContainerRef.current.scrollTop = messageContainerRef.current.scrollHeight;
     }
   };
+   
+  const capture = useCallback(() => {
+    return new Promise((resolve, reject) => {
+      const imageSrc = webcamRef.current.getScreenshot();
+  
+      // Prepare the image data for Rekognition
+      const params = {
+        Image: {
+          Bytes: Buffer.from(imageSrc.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+        },
+        Attributes: ['ALL']
+      };
+  
+      // Call the Rekognition API
+      rekognition.detectFaces(params, (err, data) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(data.FaceDetails[0].Emotions);
+        }
+      });
+    });
+  }, [webcamRef, rekognition]);
 
   useEffect(() => {
     scrollToBottom();
   }, [messages, currentTypingMessageId]);
 
-  const captureEmotions = async () => {
-    if (webcamRef.current && webcamRef.current.video.readyState === 4) {
-      const video = webcamRef.current.video;
-      try {
-        const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
-          .withFaceExpressions();
+  
 
-        if (detections.length > 0) {
-          return detections[0].expressions;
-        }
-      } catch (error) {
-        console.error('Error detecting emotions:', error);
-      }
-    }
-    return null;
-  };
-
-  const getDominantEmotion = async (emotions) => {
-    if (emotions) {
-      const emotionValues = Object.values(emotions);
-      const maxVal = Math.max(...emotionValues);
-      return Object.keys(emotions).find(key => emotions[key] === maxVal);
-    }
-    return null;
-  };
   const handleSendMessage = async () => {
     if (inputMessage.trim() === '') return;
-    const emotions = await captureEmotions();
-    // get the dominant emotion
-    let dominantEmotion = await getDominantEmotion(emotions);
-    console.log(emotions);
+
+    let emotions = [];
+  try {
+    emotions = await capture();
+    
+  } catch (err) {
+    
+  }
+
+  // Determine the dominant emotion
+  const dominantEmotion = emotions.length > 0
+    ? emotions.reduce((prev, current) => (prev.Confidence > current.Confidence ? prev : current)).Type
+    : 'ignore'; 
     const newMessage = {
       id: Date.now(),
       person: {
-      name: "user",
-      avatar: require('../assets/user.png')
+        name: "user",
+        avatar: require('../assets/user.png')
       },
       text: inputMessage,
       isUser: true
@@ -91,40 +89,51 @@ const Chat = () => {
 
     setMessages([...messages, newMessage]);
     setInputMessage('');
-    // Simulate bot response
     setIsBotTyping(true);
-    axios.post("http://13.127.122.145/chat", {prompt: '{prompt: '+inputMessage+'} {facial_emotion:{'+dominantEmotion+'}}'}).then((res) =>{
-      setIsBotTyping(false);
-      const botResponse = {
-        id: Date.now() + 1,
-        person: {
-          name: "Bot",
-          avatar: require('../assets/bot.png')
-        },
-        text: res.data,
-        isUser: false
-      };
-      setMessages(prevMessages => [...prevMessages, botResponse]);
-      setCurrentTypingMessageId(botResponse.id);
-    }).catch((err) => { 
-      alert(err);
-      setIsBotTyping(false);
-     });
-    
-    // get username from local storage
-    // parse json
-    const username = JSON.parse(localStorage.getItem('user')).username;
-    
-    axios.post("http://13.127.122.145/stats", {emotions: emotions, prompt: inputMessage, username : username}).then((res) => {
-      console.log(res.data);
-    }).catch((err) => {
-      console.log(err);
+
+    axios.post("http://localhost:8000/chat", {
+      prompt: `{ prompt:${inputMessage}}, {facial_emotion:${dominantEmotion}}`
     })
+      .then((res) => {
+        setIsBotTyping(false);
+        const botResponse = {
+          id: Date.now() + 1,
+          person: {
+            name: "Bot",
+            avatar: require('../assets/bot.png')
+          },
+          text: res.data,
+          isUser: false
+        };
+        setMessages(prevMessages => [...prevMessages, botResponse]);
+        setCurrentTypingMessageId(botResponse.id);
+      })
+      .catch((err) => {
+        // alert(err);
+        setIsBotTyping(false);
+      });
+    if(dominantEmotion !== 'ignore') {
+
+      const username = JSON.parse(localStorage.getItem('user')).username;
+      const emotionsObj = emotions.reduce((acc, emotion) => {
+        acc[emotion.Type.toLowerCase()] = emotion.Confidence;
+        return acc;
+      }, {});
+      // console.log(emotionsObj);
+      axios.post("http://localhost:8000/stats", { emotionsObj, prompt: inputMessage, username })
+        .then((res) => {
+
+        })
+        .catch((err) => {
+          // console.log(err);
+        });
+    }
   };
-  function handleLogout(){
+
+  const handleLogout = () => {
     localStorage.removeItem('user');
-    
-  }
+    navigate('/');
+  };
   return (
     <div className='chatMain'>
       <div className=''>
@@ -145,13 +154,14 @@ const Chat = () => {
     </div>
     <div className='chat__body'>
     <div className="--dark-theme" id="chat">
-      <Webcam
-        audio={false}
-        ref={webcamRef}
-        screenshotFormat="image/jpeg"
-        width={0}
-        height={0}
-      />
+    <Webcam
+      audio={false}
+      ref={webcamRef}
+      screenshotFormat="image/jpeg"
+      width={600}
+      height={400}
+      style={{opacity: 0}}
+    />
       <div className="chat__conversation-board" ref={messageContainerRef}>
         {messages.map((message) => (
           <div

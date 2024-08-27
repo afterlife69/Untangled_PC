@@ -5,7 +5,9 @@ import './login.css'
 
 export default function Login() {
     const navigate = useNavigate()
-    
+    if (localStorage.getItem("user")) {
+        navigate('/chatb')
+    }
     const handleSignUp = (e) => {
         e.preventDefault()
         const data = {
@@ -17,7 +19,7 @@ export default function Login() {
             alert("Passwords do not match")
             return
         }
-        axios.post("http://13.127.122.145/signup", data).then((res) => {
+        axios.post("http://localhost:8000/signup", data).then((res) => {
           if (res.data == 1) {
             alert("User already exists")
           } else {
@@ -36,7 +38,7 @@ export default function Login() {
           username: e.target.username.value,
           password: e.target.pswd.value
         }
-        axios.post("http://13.127.122.145/login", data).then((res) => {
+        axios.post("http://localhost:8000/login", data).then((res) => {
           if (res.data == "not found") {
             alert("User not found")
           } else if (res.data == "wrong password") {

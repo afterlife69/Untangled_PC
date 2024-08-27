@@ -17,24 +17,26 @@ const userSchema = new mongoose.Schema({
     required: true
   },
   moodStatistics: {
-    neutral: { type: Number, default: 0 },
+    calm: { type: Number, default: 0 },
     happy: { type: Number, default: 0 },
     sad: { type: Number, default: 0 },
     angry: { type: Number, default: 0 },
-    fearful: { type: Number, default: 0 },
+    fear: { type: Number, default: 0 },
     disgusted: { type: Number, default: 0 },
     surprised: { type: Number, default: 0 },
+    confused: { type: Number, default: 0 },
   },
   recentStatistics: [
     {
       emotions: {
-        neutral: Number,
+        calm: Number,
         happy: Number,
         sad: Number,
         angry: Number,
-        fearful: Number,
+        fear: Number,
         disgusted: Number,
         surprised: Number,
+        confused: Number,
       },
       prompt: String,
     }

@@ -25,7 +25,7 @@ export default function Stats() {
 
   const getStats = async () => {
     try {
-      const { data } = await axios.post('http://13.127.122.145/getStats', { username: JSON.parse(localStorage.getItem('user')).username });
+      const { data } = await axios.post('http://localhost:8000/getStats', { username: JSON.parse(localStorage.getItem('user')).username });
       // make capital first letter
       const curData = Object.entries(data.moodStatistics).map(([key, value]) => ({ value: Math.round(value), label: key.charAt(0).toUpperCase() + key.slice(1) }));
 
@@ -62,7 +62,7 @@ export default function Stats() {
       setRecentRows(rows);
       setRecentStats(data.recentStatistics);
     } catch (err) {
-      alert(err);
+
     }
   };
 
@@ -99,7 +99,7 @@ export default function Stats() {
             <ul>
               <Link to={'/chatb'} className='menuLink'><li>Chatbot</li></Link>
               <Link to={'/stats'} className='menuLink'><li>Statistics</li></Link>
-              <Link onClick={handleLogout} to={'/'}><li>Log out</li></Link>
+              <Link onClick={handleLogout} to={'/'} className='menuLink'><li>Log out</li></Link>
             </ul>
             <span className="hamburger-menu"></span>
           </label>

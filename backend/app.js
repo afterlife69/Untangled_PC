@@ -4,6 +4,9 @@ import cors from 'cors';
 import mongoose from 'mongoose';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import User from './schemas/user.js';
+import * as dotenv from 'dotenv';
+dotenv.config();
+
 
 const app = express();
 app.use(bodyParser.json({ limit: '10mb' }));
@@ -16,7 +19,7 @@ mongoose.connect(process.env.MONGO_URL).then(() => {
 })
 // Initialize Google AI
 
-const genAI = new GoogleGenerativeAI('AIzaSyAegrp-N6FhUhthYxCZSfsHYpMwaJGHSGM');
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API);
 const model = genAI.getGenerativeModel({
   model: "gemini-1.5-flash",
   systemInstruction: "you are a mental health professional and your name is untangled thoughts, you are provided with the user's current facial emotion and you want to help them feel better, dont use emojis",
@@ -39,8 +42,9 @@ app.post('/signup', async (req, res) => {
     happy: 0,
     neutral: 0,
     sad: 0,
-    surprised: 0
-  }, dailyStatistics: [] });
+    surprised: 0,
+    calm: 0,
+  }, recentStatistics: [] });
   try {
     // console.log('here')
     await user.save();
@@ -88,27 +92,28 @@ app.post('/chat', async (req, res) => {
 });
 
 app.post('/stats', async (req, res) => {
-  const { emotions, prompt, username } = req.body;
+  const { emotionsObj, prompt, username } = req.body;
   try {
     const user = await User.findOne({ username });
     
     if (!user) {
       return res.status(404).json('User not found');
     }
-    // console.log(emotions)
+    const emotions = emotionsObj;
+    // console.log(emotionsObj)
     
     for (const [key, value] of Object.entries(emotions)) {
       if(!user.moodStatistics[key]){
-        user.moodStatistics[key] = (value * 100);
+        user.moodStatistics[key] = (value);
       }
       else
       {
-        user.moodStatistics[key] += (value * 100);
+        user.moodStatistics[key] += (value);
         user.moodStatistics[key] = user.moodStatistics[key] / 2;
       }
-      emotions[key] = (value * 100);
+      emotions[key] = (value);
     }
-    console.log(user.moodStatistics)
+    // console.log(user.moodStatistics)
     if (user.recentStatistics.length === 20) {
       user.recentStatistics.shift();
     }
