@@ -1,0 +1,157 @@
+.login-page {
+	margin: 0;
+	padding: 0;
+	display: grid;
+	place-items: center;
+	height: 100vh;
+	width: 100vw;
+	font-family: 'Jost', sans-serif;
+	background: rgb(15,139,246);
+	background: linear-gradient(123deg, rgba(15,139,246,1) 0%, rgba(253,6,111,1) 100%);
+  }
+  
+  .login-page .main {
+	width: 350px;
+	height: 500px;
+	background: red;
+	overflow: hidden;
+	background: url("https://doc-08-2c-docs.googleusercontent.com/docs/securesc/68c90smiglihng9534mvqmq1946dmis5/fo0picsp1nhiucmc0l25s29respgpr4j/1631524275000/03522360960922298374/03522360960922298374/1Sx0jhdpEpnNIydS4rnN4kHSJtU1EyWka?e=view&authuser=0&nonce=gcrocepgbb17m&user=03522360960922298374&hash=tfhgbs86ka6divo3llbvp93mg4csvb38") no-repeat center/ cover;
+	border-radius: 10px;
+	box-shadow: 5px 20px 50px #000;
+  }
+  
+  .login-page #chk {
+	display: none;
+  }
+  
+  .login-page .signup {
+	position: relative;
+	width: 100%;
+	height: 100%;
+  }
+  
+  .login-page label {
+	color: #fff;
+	font-size: 2.3em;
+	justify-content: center;
+	display: flex;
+	margin: 50px;
+	font-weight: bold;
+	cursor: pointer;
+	transition: .5s ease-in-out;
+  }
+  
+  .login-page input {
+	width: 60%;
+	height: 10px;
+	background: #e0dede;
+	justify-content: center;
+	display: flex;
+	margin: 20px auto;
+	padding: 12px;
+	border: none;
+	outline: none;
+	border-radius: 5px;
+  }
+  
+  .login-page button {
+	width: 60%;
+	height: 40px;
+	margin: 10px auto;
+	justify-content: center;
+	display: block;
+	color: #fff;
+	background-image: linear-gradient(to left, #25879b, #36E196);
+	background-size: 200% 100%;
+	background-position: left;
+	font-size: 1em;
+	font-weight: bold;
+	margin-top: 30px;
+	outline: none;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	transition: background-position 0.2s ease-in-out;
+  }
+  
+  .login-page button:hover {
+	animation: gradientAnimation 1s infinite alternate;
+  }
+  
+  @keyframes gradientAnimation {
+	from {
+	  background-position: left;
+	}
+	to {
+	  background-position: right;
+	}
+  }
+  
+  .login-page .login {
+	height: 460px;
+	background: #eee;
+	border-radius: 60% / 10%;
+	transform: translateY(-180px);
+	transition: .8s ease-in-out;
+  }
+  
+  .login-page .login label {
+	color: #573b8a;
+	transform: scale(.6);
+  }
+  
+  .login-page #chk:checked ~ .login {
+	transform: translateY(-500px);
+  }
+  
+  .login-page #chk:checked ~ .login label {
+	transform: scale(1);  
+  }
+  
+  .login-page #chk:checked ~ .signup label {
+	transform: scale(.6);
+  }
+  
+  .login-page input:focus + #spanS, 
+  .login-page input:not(:placeholder-shown) + #spanS {
+	opacity: 1;
+	background-color: transparent;
+	background-image: linear-gradient(to right, #5dffb9, #69e6ff);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent; 
+	background-clip: text;
+	transform: scale(0.8) translateY(-78%) translateX(-20%);
+	pointer-events: none;
+  }
+  
+  .login-page input:focus + #spanL, 
+  .login-page input:not(:placeholder-shown) + #spanL {
+	opacity: 1;
+	background-color: transparent;
+	background-image: linear-gradient(to right, #1d7750, #227b8d);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent; 
+	background-clip: text;
+	transform: scale(0.8) translateY(-78%) translateX(-20%);
+	pointer-events: none;
+  }
+  
+  .login-page #ipbox {
+	position: relative;
+  }
+  
+  .login-page #spanS,
+  .login-page #spanL {
+	pointer-events: none;
+	background-image: linear-gradient(to right, #1d7750, #227b8d);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent; 
+	background-clip: text;
+	padding: 10px;
+	pointer-events: none;
+	position: absolute;
+	left: 16.5%;
+	top: -12%;
+	transition: 0.4s;
+	opacity: 0.5;
+  }
