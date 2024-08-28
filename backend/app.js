@@ -5,7 +5,7 @@ import mongoose from 'mongoose';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import User from './schemas/user.js';
 import * as dotenv from 'dotenv';
-import {AWS} from 'aws-sdk';
+
 dotenv.config();
 
 
@@ -24,12 +24,6 @@ const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API);
 const model = genAI.getGenerativeModel({
   model: "gemini-1.5-flash",
   systemInstruction: "you are a mental health professional and your name is untangled thoughts, you are provided with the user's current facial emotion and you want to help them feel better, dont use emojis",
-});
-
-AWS.config.update({
-  region: 'ap-south-1',
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
 });
 
 
@@ -151,15 +145,3 @@ app.post('/getStats', async (req, res) => {
     res.status(500).json('Failed to get statistics');
   }
 } );
-
-app.post('/emotions' , async (req, res) => {
-  const { params } = req.body;
-  rekognition.detectFaces(params, (err, data) => {
-    if (err) {
-      console.log(err, err.stack);
-      res.status(500).json('Failed to detect faces');
-    } else {
-      res.status(200).json(data);
-    }
-  });
-});
