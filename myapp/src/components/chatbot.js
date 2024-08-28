@@ -38,7 +38,7 @@ const Chat = () => {
         Attributes: ['ALL']
       };
       // Call the Rekognition API
-      axios.post("http://44.211.44.236/emotions", params).then((res) => {
+      axios.post("http://13.234.112.242/emotions", params).then((res) => {
         resolve(res.data.FaceDetails[0].Emotions);
       }).catch((err) => {
         reject(err);
@@ -82,7 +82,7 @@ const Chat = () => {
     setInputMessage('');
     setIsBotTyping(true);
 
-    axios.post("http://44.211.44.236/chat", {
+    axios.post("http://13.234.112.242/chat", {
       prompt: `{ prompt:${inputMessage}}, {facial_emotion:${dominantEmotion}}`
     })
       .then((res) => {
@@ -111,7 +111,7 @@ const Chat = () => {
         return acc;
       }, {});
       // console.log(emotionsObj);
-      axios.post("http://44.211.44.236/stats", { emotionsObj, prompt: inputMessage, username })
+      axios.post("http://13.234.112.242/stats", { emotionsObj, prompt: inputMessage, username })
         .then((res) => {
 
         })
