@@ -19,7 +19,7 @@ export default function Login() {
             alert("Passwords do not match")
             return
         }
-        axios.post("http://13.234.112.242/signup", data).then((res) => {
+        axios.post("https://untangled-back.onrender.com/signup", data).then((res) => {
           if (res.data == 1) {
             alert("User already exists")
           } else {
@@ -38,7 +38,7 @@ export default function Login() {
           username: e.target.username.value,
           password: e.target.pswd.value
         }
-        axios.post("http://13.234.112.242/login", data).then((res) => {
+        axios.post("https://untangled-back.onrender.com/login", data).then((res) => {
           if (res.data == "not found") {
             alert("User not found")
           } else if (res.data == "wrong password") {

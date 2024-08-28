@@ -25,7 +25,7 @@ export default function Stats() {
 
   const getStats = async () => {
     try {
-      const { data } = await axios.post('http://13.234.112.242/getStats', { username: JSON.parse(localStorage.getItem('user')).username });
+      const { data } = await axios.post('https://untangled-back.onrender.com/getStats', { username: JSON.parse(localStorage.getItem('user')).username });
       // make capital first letter
       const curData = Object.entries(data.moodStatistics).map(([key, value]) => ({ value: Math.round(value), label: key.charAt(0).toUpperCase() + key.slice(1) }));
 
