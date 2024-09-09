@@ -23,7 +23,7 @@ mongoose.connect(process.env.MONGO_URL).then(() => {
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API);
 const model = genAI.getGenerativeModel({
   model: "gemini-1.5-flash",
-  systemInstruction: "you are a mental health professional and your name is untangled thoughts, you are provided with the user's current facial emotion and you want to help them feel better, dont use emojis",
+  systemInstruction: "you are a mental health professional and your name is untangled thoughts, you are provided with the user's current facial emotion and you want to help them feel better",
 });
 
 
@@ -102,7 +102,8 @@ app.post('/stats', async (req, res) => {
     const emotions = emotionsObj;
     // console.log(emotionsObj)
     
-    for (const [key, value] of Object.entries(emotions)) {
+    for (let [key, value] of Object.entries(emotions)) {
+      key = key.toLowerCase();
       if(!user.moodStatistics[key]){
         user.moodStatistics[key] = (value);
       }

@@ -9,11 +9,25 @@
     min-height: 100vh;
     
 }
+body::-webkit-scrollbar {
+  width: 8px;
+  background: rgb(14, 0, 0); /* Background color of the scrollbar */
+}
+body::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1); /* Background color of the scrollbar track */
+  border-radius: 20px; /* Rounded corners of the scrollbar track */
+}
+
+body::-webkit-scrollbar-thumb {
+  background-color: #6e6e6e; /* Scrollbar thumb color */
+  border-radius: 20px; /* Rounded corners of the scrollbar thumb */
+  border: 2px solid rgba(255, 255, 255, 0.1); /* Border around the scrollbar thumb */
+}
 
 .stats_box {
     background-color: rgba(0, 0, 0, 0.5);
-    width: 90vw;
-    min-height: 90vh;
+    width: 100vw;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
     box-sizing: border-box;

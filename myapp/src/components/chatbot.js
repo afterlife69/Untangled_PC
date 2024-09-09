@@ -5,8 +5,16 @@ import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 import Webcam from 'react-webcam';
 import { Buffer } from 'buffer';
+import AWS from 'aws-sdk';
 
 
+AWS.config.update({
+  region: 'ap-south-1',
+  accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY,
+});
+
+const rekognition = new AWS.Rekognition()
 
 const initialMessages = [];
 
@@ -38,10 +46,12 @@ const Chat = () => {
         Attributes: ['ALL']
       };
       // Call the Rekognition API
-      axios.post("https://untangled-back.onrender.com/emotions", params).then((res) => {
-        resolve(res.data.FaceDetails[0].Emotions);
-      }).catch((err) => {
-        reject(err);
+      rekognition.detectFaces(params, (err, data) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(data.FaceDetails[0].Emotions);
+        }
       });
       
     });
@@ -57,12 +67,13 @@ const Chat = () => {
     if (inputMessage.trim() === '') return;
 
     let emotions = [];
-  try {
-    emotions = await capture();
-    
-  } catch (err) {
-    
-  }
+    try {
+      emotions = await capture();
+      console.log(emotions);
+      
+    } catch (err) {
+      
+    }
 
   // Determine the dominant emotion
   const dominantEmotion = emotions.length > 0
@@ -82,7 +93,7 @@ const Chat = () => {
     setInputMessage('');
     setIsBotTyping(true);
 
-    axios.post("https://untangled-back.onrender.com/chat", {
+    axios.post("http://localhost:8000/chat", {
       prompt: `{ prompt:${inputMessage}}, {facial_emotion:${dominantEmotion}}`
     })
       .then((res) => {
@@ -104,14 +115,13 @@ const Chat = () => {
         setIsBotTyping(false);
       });
     if(dominantEmotion !== 'ignore') {
-
       const username = JSON.parse(localStorage.getItem('user')).username;
       const emotionsObj = emotions.reduce((acc, emotion) => {
         acc[emotion.Type.toLowerCase()] = emotion.Confidence;
         return acc;
       }, {});
       // console.log(emotionsObj);
-      axios.post("https://untangled-back.onrender.com/stats", { emotionsObj, prompt: inputMessage, username })
+      axios.post("http://localhost:8000/stats", { emotionsObj, prompt: inputMessage, username })
         .then((res) => {
 
         })
@@ -143,16 +153,17 @@ const Chat = () => {
         </span>
       </span>
     </div>
-    <div className='chat__body'>
-    <div className="--dark-theme" id="chat">
     <Webcam
       audio={false}
       ref={webcamRef}
       screenshotFormat="image/jpeg"
       width={600}
       height={400}
-      style={{opacity: 0}}
+      style={{zIndex: -2, position: 'absolute', top: 0, right: 0}}
     />
+    <div className='chat__body'>
+      
+    <div className="--dark-theme" id="chat">
       <div className="chat__conversation-board" ref={messageContainerRef}>
         {messages.map((message) => (
           <div

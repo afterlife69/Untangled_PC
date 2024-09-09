@@ -13,7 +13,6 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path='/stats' element={<Stats />} />
-            <Route path='/emotion' element={<LiveEmotionDetection />} />
             <Route path='/chatb' element={<Chat />} />
             <Route path='/hello' element={<Hello />} />
             <Route path='/example' element={<Example />} />
