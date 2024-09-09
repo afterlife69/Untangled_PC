@@ -93,7 +93,7 @@ const Chat = () => {
     setInputMessage('');
     setIsBotTyping(true);
 
-    axios.post("http://localhost:8000/chat", {
+    axios.post("http://107.22.154.58:8000/chat", {
       prompt: `{ prompt:${inputMessage}}, {facial_emotion:${dominantEmotion}}`
     })
       .then((res) => {
@@ -121,7 +121,7 @@ const Chat = () => {
         return acc;
       }, {});
       // console.log(emotionsObj);
-      axios.post("http://localhost:8000/stats", { emotionsObj, prompt: inputMessage, username })
+      axios.post("http://107.22.154.58:8000/stats", { emotionsObj, prompt: inputMessage, username })
         .then((res) => {
 
         })

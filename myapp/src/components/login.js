@@ -1,4 +1,3 @@
-import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import axios from "axios"
 import './login.css'
@@ -19,7 +18,7 @@ export default function Login() {
             alert("Passwords do not match")
             return
         }
-        axios.post("http://localhost:8000/signup", data).then((res) => {
+        axios.post("http://107.22.154.58:8000/signup", data).then((res) => {
           if (res.data == 1) {
             alert("User already exists")
           } else {
@@ -38,7 +37,7 @@ export default function Login() {
           username: e.target.username.value,
           password: e.target.pswd.value
         }
-        axios.post("http://localhost:8000/login", data).then((res) => {
+        axios.post("http://107.22.154.58:8000/login", data).then((res) => {
           if (res.data == "not found") {
             alert("User not found")
           } else if (res.data == "wrong password") {

@@ -1,12 +1,10 @@
 import './App.css';
 import {Route, Routes, BrowserRouter} from 'react-router-dom'
 import Hello from './components/hello';
-import Menu from './components/menu';
 import Example from './components/example';
 import Login from './components/login';
 import Chat from './components/chatbot';
 import Stats from './components/stats';
-import LiveEmotionDetection from './components/emotionDetection';
 function App() {
   return (
       <div>

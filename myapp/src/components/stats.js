@@ -3,7 +3,6 @@ import { PieChart, pieArcLabelClasses } from '@mui/x-charts/PieChart';
 import { LineChart } from '@mui/x-charts/LineChart';
 import { DataGrid } from '@mui/x-data-grid';
 import { Link } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './stats.css';
 
@@ -15,7 +14,6 @@ export default function Stats() {
   const [recentStats, setRecentStats] = useState([]);
   const [selectedEmotion, setSelectedEmotion] = useState(''); // State for selected emotion
   const [maxEmotion, setMaxEmotion] = useState('No data'); // State for emotion with max value
-  const navigate = useNavigate();
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
     window.addEventListener('resize', handleResize);
@@ -25,7 +23,7 @@ export default function Stats() {
 
   const getStats = async () => {
     try {
-      const { data } = await axios.post('http://localhost:8000/getStats', { username: JSON.parse(localStorage.getItem('user')).username });
+      const { data } = await axios.post('http://107.22.154.58:8000/getStats', { username: JSON.parse(localStorage.getItem('user')).username });
       // make capital first letter
       const curData = Object.entries(data.moodStatistics).map(([key, value]) => ({ value: Math.round(value), label: key.charAt(0).toUpperCase() + key.slice(1) }));
 
